@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const Folder = ({ explorer }) => {
+const Folder = ({ handleInsertNode, explorer }) => {
   const [expand, setExpand] = useState(false);
   const [showInput, setShowInput] = useState({
     visible: false,
@@ -9,11 +9,18 @@ const Folder = ({ explorer }) => {
 
   const handleNewFolder = (e, isFolder) => {
     e.stopPropagation();
-    setExpand(true)
+    setExpand(true);
     setShowInput({
       visible: true,
       isFolder,
     });
+  };
+
+  const onAddFolder = (e) => {
+    if (e.keyCode === 13 && e.target.value) {
+      handleInsertNode(explorer.id, e.target.value, showInput.isFolder);
+      setShowInput({ ...showInput, visible: false });
+    }
   };
 
   if (explorer.isFolder) {
@@ -31,6 +38,7 @@ const Folder = ({ explorer }) => {
             <div>
               <span>{showInput.isFolder ? "📁" : "📄"}</span>
               <input
+                onKeyDown={(e) => onAddFolder(e)}
                 type="text"
                 className="inputContainer__input"
                 autoFocus
@@ -39,7 +47,13 @@ const Folder = ({ explorer }) => {
             </div>
           )}
           {explorer.items.map((exp) => {
-            return <Folder explorer={exp} key={exp.id}/>;
+            return (
+              <Folder
+                handleInsertNode={handleInsertNode}
+                explorer={exp}
+                key={exp.id}
+              />
+            );
           })}
         </div>
       </div>
